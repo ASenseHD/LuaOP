@@ -1,2 +1,2 @@
 # LuaOP
-Simple opcode interpreter toolkit heavily inspired from Lua's
+Simple opcode interpreter heavily inspired from Lua's
