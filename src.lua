@@ -89,7 +89,6 @@ LOPObject.OPCodes = {
 	
 	SETTABLE = function(_, IdxArgNum)
 		LazyFuncs:CheckArg("SETTABLE", 1, IdxArgNum, "number")
-		
 		LazyFuncs:CheckArg("SETTABLE", 2, LOPObject.Stack[IdxArgNum + 1], "table")
 		
 		local Args = {}
@@ -157,9 +156,8 @@ LOPObject.OPCodes = {
 		LOPObject.Stack[1] ^= Amt
 	end,
 	
-	UNM = function(_, Amt)
-		LazyFuncs:CheckArg("UNM", 1, Amt, "number")
-		LazyFuncs:CheckArg("UNM", 2, LOPObject.Stack[1], "number")
+	UNM = function()
+		LazyFuncs:CheckArg("UNM", 1, LOPObject.Stack[1], "number")
 		
 		LOPObject.Stack[1] = -LOPObject.Stack[1]
 	end,
@@ -238,14 +236,14 @@ LOPObject.OPCodes = {
 	
 	GETFIELD = function()
 		--LazyFuncs:CheckArg("GETFIELD", 1, LOPObject.Stack[1], {"string", "number"})
-		LazyFuncs:CheckArg("GETFIELD", 2, LOPObject.Stack[2], {"table", "userdata"})
+		LazyFuncs:CheckArg("GETFIELD", 1, LOPObject.Stack[2], {"table", "userdata"})
 		
 		table.insert(LOPObject.Stack, 1, LOPObject.Stack[2][LOPObject.Stack[1]])
 	end,
 	
 	SETFIELD = function()
 		--LazyFuncs:CheckArg("SETFIELD", 2, LOPObject.Stack[2], {"string", "number"})
-		LazyFuncs:CheckArg("SETFIELD", 3, LOPObject.Stack[3], {"table", "userdata"})
+		LazyFuncs:CheckArg("SETFIELD", 1, LOPObject.Stack[3], {"table", "userdata"})
 
 		LOPObject.Stack[3][LOPObject.Stack[2]] = LOPObject.Stack[1]
 	end,
@@ -304,7 +302,7 @@ LOPObject.OPCodes = {
 	end,
 	
 	SETFASTFUNC = function()
-		LazyFuncs:CheckArg("REGFASTPTR", 1, LOPObject.Stack[1], {"table", "function"})
+		LazyFuncs:CheckArg("SETFASTFUNC", 1, LOPObject.Stack[1], {"table", "function"})
 		
 		LOPObject.FastCallFunc = LOPObject.Stack[1]
 	end,
@@ -316,8 +314,6 @@ LOPObject.OPCodes = {
 		table.insert(LOPObject.Stack, IdxArgNum + 1, LOPObject.FastCallFunc)
 		
 		LOPObject.OPCodes.CALL(nil, IdxArgNum)
-		
-		--table.insert(LOPObject.Stack, 1, LOPObject.FastCallFunc)
 	end,
 	
 	PCALL = function(_, Scope)
@@ -451,7 +447,6 @@ LOPObject.OPCodes = {
 	end,
 }
 
-LOPObject.Run = nil;
 function LOPObject:Run(OpCodes, IsInLoop, Args): any
 	LazyFuncs:CheckArg("Run", 1, OpCodes, "table")
 	LazyFuncs:CheckArg("Run", 2, IsInLoop, {"boolean", "nil"})
