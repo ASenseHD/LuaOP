@@ -8,22 +8,22 @@ Protos are equivalent to vanilla Lua functions but defined within a scope. You c
 
 ```lua
 local ProtoTable = {
-	{Name = "LOADK", Args = {2}},
-	{Name = "ADD", Args = {2}},
-	{Name = "RETURN", Args = {1}} -- Will return 1 argument, the value on top of the stack, which is 4 (a number constant)
+    {Name = "LOADK", Args = {2}},
+    {Name = "ADD", Args = {2}},
+    {Name = "RETURN", Args = {1}} -- Will return 1 argument, the value on top of the stack, which is 4 (a number constant)
 }
 
 LOPObject:Run({
-	{Name = "GETGLOBAL", Args = {"print"}},
-	{Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
+    {Name = "GETGLOBAL", Args = {"print"}},
+    {Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
 
-	{Name = "NEWPROTO", Args = {ProtoTable}},
-	{Name = "CALL", Args = {0}}, -- Call proto with no arguments (0 arguments, so no elements from the stack)
+    {Name = "NEWPROTO", Args = {ProtoTable}},
+    {Name = "CALL", Args = {0}}, -- Call proto with no arguments (0 arguments, so no elements from the stack)
 	
-	{Name = "LOADK", Args = {1}},
-	{Name = "GETFIELD", Args = {}},
+    {Name = "LOADK", Args = {1}},
+    {Name = "GETFIELD", Args = {}},
 	
-	{Name = "FASTCALL", Args = {1}} -- Will call `print` which will output 4 as that's the value on top of the stack
+    {Name = "FASTCALL", Args = {1}} -- Will call `print` which will output 4 as that's the value on top of the stack
 })
 ```
 
@@ -35,13 +35,13 @@ You can execute scopes which are in a scope by passing them to the ``DO`` opcode
 
 ```lua
 LOPObject:Run({
-	{Name = "GETGLOBAL", Args = {"print"}},
-	{Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
+    {Name = "GETGLOBAL", Args = {"print"}},
+    {Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
 
-	{Name = "DO", Args = {{
-		{Name = "LOADK", Args = {"I am a string"}},
-		{Name = "FASTCALL", Args = {1}} -- Calls `print` with the constant: "I am a string" 
-	}}}
+    {Name = "DO", Args = {{
+    	{Name = "LOADK", Args = {"I am a string"}},
+    	{Name = "FASTCALL", Args = {1}} -- Calls `print` with the constant: "I am a string" 
+    }}}
 })
 ```
 
@@ -52,21 +52,21 @@ Please note that there isn't a way yet to make ``else`` statements yet.
 
 ```lua
 LOPObject:Run({
-	{Name = "NEWPROTO", Args = {{
-		{Name = "LOADK", Args = {2}},
-		{Name = "ADD", Args = {2}},
-		{Name = "RETURN", Args = {1}} -- Will return 1 argument, the value on top of the stack, which is 4 (a number constant)
-	}}},
-	{Name = "SETFASTFUNC", Args = {}}, -- Sets our new proto as the FASTFUNC
+    {Name = "NEWPROTO", Args = {{
+    	{Name = "LOADK", Args = {2}},
+    	{Name = "ADD", Args = {2}},
+    	{Name = "RETURN", Args = {1}} -- Will return 1 argument, the value on top of the stack, which is 4 (a number constant)
+    }}},
+    {Name = "SETFASTFUNC", Args = {}}, -- Sets our new proto as the FASTFUNC
 
-	{Name = "LOADK", Args = {1}},
-	{Name = "LOADK", Args = {2}},
+    {Name = "LOADK", Args = {1}},
+    {Name = "LOADK", Args = {2}},
 
-	{Name = "NEQ", Args = {}}, -- Will push true, since the two first values at the top of the stack aren't equal: 2 ~= 1
+    {Name = "NEQ", Args = {}}, -- Will push true, since the two first values at the top of the stack aren't equal: 2 ~= 1
 
-	{Name = "IF", Args = {{ -- Will evaluate the top value of the stack the same as Lua would, meaning that if the value is positive (not nil or false), LuaOP will run the if statement
-		{Name = "FASTCALL", Args = {0}} -- Calls our proto with no arguments 
-	}}}
+    {Name = "IF", Args = {{ -- Will evaluate the top value of the stack the same as Lua would, meaning that if the value is positive (not nil or false), LuaOP will run the if statement
+    	{Name = "FASTCALL", Args = {0}} -- Calls our proto with no arguments 
+    }}}
 })
 ```
 
