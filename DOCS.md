@@ -8,7 +8,7 @@ The `LOPObject.OPCodes` table contains various OpCode functions used for manipul
 function(From, To)
 ```
 
-Copies the value of From to To in the environment table Data.Env. Both From and To should be strings representing variable names.
+Copies the value of From to To in the environment table ``Data.Env``. Both From and To should be strings representing variable names.
 
 Example:
 
@@ -143,8 +143,24 @@ Creates a new prototype function with the provided Proto table and pushes it ont
 Example:
 
 ```lua
-local myProto = {...} -- define your prototype
+local myProto = { -- define your prototype
+    {
+        Name = "GETGLOBAL",
+        Args = {"print"}
+    },
+
+    {
+        Name = "LOADK",
+        Args = {"Called from proto!"}
+    },
+
+    {
+        Name = "CALL",
+        Args = {1}
+    }
+}
 LOPObject.OPCodes.NEWPROTO(myProto)
+LOPObject.OPCodes.CALL(0) -- call with 0 arguments
 ```
 
 ### ADD
@@ -256,7 +272,8 @@ Inverts the boolean value on the top of the stack.
 Example:
 
 ```lua
-LOPObject.OPCodes.NOT()
+LOPObject.OPCodes.LOADBOOL(true)
+LOPObject.OPCodes.NOT() -- previously pushed boolean will now be false 
 ```
 
 ### LEN
@@ -270,7 +287,8 @@ Returns the length of the top value on the stack, assuming it's a table or strin
 Example:
 
 ```lua
-LOPObject.OPCodes.LEN()
+LOPObject.OPCodes.NEWTABLE()
+LOPObject.OPCodes.LEN() -- will push the integer 0 to the stack
 ```
 
 ### CONCAT
@@ -284,7 +302,9 @@ Concatenates the top two values on the stack (assuming they are strings or numbe
 Example:
 
 ```lua
-LOPObject.OPCodes.CONCAT()
+LOPObject.OPCodes.LOADK("Hello ")
+LOPObject.OPCodes.LOADK("World!")
+LOPObject.OPCodes.CONCAT() -- will push `Hello World!` onto the stack
 ```
 
 ### TOSTR
@@ -321,7 +341,7 @@ LOPObject.OPCodes.TONUM()
 function(InstrPointerAdd)
 ```
 
-Jumps the instruction pointer by InstrPointerAdd positions.
+Jumps the instruction pointer by InstrPointerAdd positions. (NOTE: This will only apply to the current scope!)
 
 Example:
 
@@ -424,7 +444,9 @@ Pops the top value as a key and the second-to-top value as a table, then pushes 
 Example:
 
 ```lua
-LOPObject.OPCodes.GETFIELD()
+LOPObject.OPCodes.NEWTABLE()
+LOPObject.OPCodes.LOADK("myTableIndex")
+LOPObject.OPCodes.GETFIELD() -- will push nil
 ```
 
 ### SETFIELD
@@ -447,12 +469,13 @@ LOPObject.OPCodes.SETFIELD()
 function()
 ```
 
-Throws an error with the top value on the stack as the error message. If the top value is nil, it throws a generic error.
+Throws an error with the top value on the stack as the error message. If the top value is nil, it throws a generic ``manually thrown`` LOP error.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.THROW()
+LOPObject.OPCodes.LOADK("I errored!")
+LOPObject.OPCodes.THROW() -- will error: LOP Runtime Error at OP `THROW`: I errored!
 ```
 
 ### ASSERT
@@ -472,15 +495,15 @@ LOPObject.OPCodes.ASSERT()
 ### GETARGS
 
 ```lua
-function(Data)
+function()
 ```
 
-Pushes the Args table from the Data parameter onto the stack.
+Pushes the Args table which were the arguments provided.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.GETARGS(Data)
+LOPObject.OPCodes.GETARGS()
 ```
 
 ### CALL
@@ -504,6 +527,7 @@ function()
 ```
 
 Sets the LOPObject's clock to the current time.
+This opcode is done mostly for timers, and to avoid overwriting the ``FASTCALL`` function / proto. 
 
 Example:
 
@@ -518,6 +542,7 @@ function()
 ```
 
 Pushes the time elapsed since the last DBGSETCLOCK onto the stack.
+This opcode is done mostly for timers, and to avoid overwriting the ``FASTCALL`` function / proto. 
 
 Example:
 
@@ -531,12 +556,13 @@ LOPObject.OPCodes.DBGPUSHCLOCK()
 function()
 ```
 
-Sets the LOPObject's fast call function to the top value on the stack. This function is used for fast function calls.
+Sets the LOPObject's fast call function to the top value on the stack assuming it's a proto or a function. This function is used for fast and easy function calls.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.SETFASTFUNC()
+LOPObject.OPCodes.GETGLOBAL("print")
+LOPObject.OPCodes.SETFASTFUNC() -- will set the lua global "print" as the FASTFUNC
 ```
 
 ### FASTCALL
@@ -545,12 +571,14 @@ LOPObject.OPCodes.SETFASTFUNC()
 function(IdxArgNum)
 ```
 
-Calls the fast function on the stack with the top IdxArgNum values as arguments.
+Calls the fast function assuming it was previously defined with ``SETFASTFUNC`` with the top IdxArgNum values as arguments.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.FASTCALL(3)
+LOPObject.OPCodes.LOADK(45)
+LOPObject.OPCodes.LOADK("abc")
+LOPObject.OPCodes.FASTCALL(2) -- calls fast func with "45, 'abc'"
 ```
 
 ### PCALL
@@ -564,21 +592,27 @@ Calls the LOPObject:Run function with the provided Scope table and pushes the su
 Example:
 
 ```lua
-LOPObject.OPCodes.PCALL(myScope)
+-- will push true and nil, since no errors occurred or no exceptions were thrown.
+LOPObject.OPCodes.PCALL({
+    {
+        Name = "LOADK",
+        Args = "I love LuaOP!"
+    }
+})
 ```
 
 ### GETFENV
 
 ```lua
-function(Data)
+function()
 ```
 
-Gets the environment of a function on the stack and pushes it onto the stack.
+Gets the environment of a **function** on the stack and pushes it onto the stack.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.GETFENV(Data)
+LOPObject.OPCodes.GETFENV()
 ```
 
 ### SETFENV
@@ -587,7 +621,7 @@ LOPObject.OPCodes.GETFENV(Data)
 function(FuncOrScope)
 ```
 
-Sets the environment of a function on the stack to the provided FuncOrScope table and pushes the new environment onto the stack.
+Sets the environment of a **function** on the stack to the provided FuncOrScope table and pushes the new environment onto the stack.
 
 Example:
 
@@ -598,15 +632,27 @@ LOPObject.OPCodes.SETFENV(myScope)
 ### CNVPROTO
 
 ```lua
-function(Data)
+function()
 ```
 
-Converts a prototype function on the stack into a lua function and pushes it back onto the stack.
+Converts a proto at the top of the stack into a lua function and pushes it back onto the stack.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.CNVPROTO(Data)
+LOPObject.OPCodes.NEWPROTO({
+    {
+        Name = "GETGLOBAL",
+        Args = {"gcinfo"}
+    },
+
+    {
+        Name = "CALL",
+        Args = {0}
+    },
+})
+
+LOPObject.OPCodes.CNVPROTO()
 ```
 
 ### RETURN
@@ -626,7 +672,7 @@ LOPObject.OPCodes.RETURN(2)
 ### BREAK
 
 ```lua
-function(Data)
+function()
 ```
 
 Signals a break in the current loop. Can only be used inside loops.
@@ -634,7 +680,7 @@ Signals a break in the current loop. Can only be used inside loops.
 Example:
 
 ```lua
-LOPObject.OPCodes.BREAK(Data)
+LOPObject.OPCodes.BREAK()
 ```
 
 ### IF
@@ -662,7 +708,9 @@ Iterates over a numeric range specified by the top two values on the stack and e
 Example:
 
 ```lua
-LOPObject.OPCodes.FORI(myScope)
+LOPObject.OPCodes.LOADK(1)
+LOPObject.OPCodes.LOADK(10)
+LOPObject.OPCodes.FORI(myScope) -- will execute myScope 10 times
 ```
 
 ### FOR
