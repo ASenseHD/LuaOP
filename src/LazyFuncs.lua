@@ -4,7 +4,7 @@ function LazyFuncs:CheckVoid(...)
 		error("expected 1 argument for CheckVoid", 2)
 	end
 
-	return select("#", ...) == 0
+	return select("#", ...) == 0 --x
 end
 
 function LazyFuncs:CheckArg(func, pos, arg, possibleArgType)
