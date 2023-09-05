@@ -8,19 +8,19 @@ Protos are equivalent to vanilla Lua functions but defined within a scope. You c
 
 ```lua
 local ProtoTable = {
-    {Name = "LOADK", Args = {2}}
-    {Name = "ADD", Args = {2}}
-    {Name = "RETURN", Args = {1}} -- Will return 1 argument, the value on top of the stack, which is 4 (a number constant)
+	{Name = "LOADK", Args = {2}},
+	{Name = "ADD", Args = {2}},
+	{Name = "RETURN", Args = {1}} -- Will return 1 argument, the value on top of the stack, which is 4 (a number constant)
 }
 
 LOPObject:Run({
-    {Name = "GETGLOBAL", Args = {"print"}},
-    {Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
-    
-    {Name = "NEWPROTO", Args = {ProtoTable}},
-    {Name = "CALL", Args = {0}}, -- Call proto with no arguments (0 arguments, so no elements from the stack)
+	{Name = "GETGLOBAL", Args = {"print"}},
+	{Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
 
-    {Name = "FASTCALL", Args = {1}} -- Will call `print` which will output 4 as that's the value on top of the stack
+	{Name = "NEWPROTO", Args = {ProtoTable}},
+	{Name = "CALL", Args = {0}}, -- Call proto with no arguments (0 arguments, so no elements from the stack)
+
+	{Name = "FASTCALL", Args = {1}} -- Will call `print` which will output 4 as that's the value on top of the stack
 })
 ```
 
@@ -36,7 +36,7 @@ LOPObject:Run({
     {Name = "SETFASTFUNC", Args = {}}, -- Sets lua global `print` as the FASTFUNC
 
     {Name = "DO", Args = {
-        {Name = "LOADK", Args = {"I am a string"}}
+        {Name = "LOADK", Args = {"I am a string"}},
         {Name = "FASTCALL", Args = {1}} -- Calls `print` with the constant: "I am a string" 
     }}
 })
@@ -119,10 +119,10 @@ You can set a fastcall function using the SETFASTFUNC opcode and then use FASTCA
 
 ```lua
 LOPObject:Run({
-    {Name = "GETGLOBAL", Args = {"print"}}
-    {Name = "SETFASTFUNC", Args = {FastFunc}} -- Sets print as the fastcall function
+    {Name = "GETGLOBAL", Args = {"print"}},
+    {Name = "SETFASTFUNC", Args = {FastFunc}}, -- Sets print as the fastcall function
     
-    {Name = "LOADK", Args = {"Hello, world!"}}
+    {Name = "LOADK", Args = {"Hello, world!"}},
     {Name = "FASTCALL", Args = {1}} -- Calls the fastcall function with 1 arguments, which will output "Hello, world!" in the console
 })
 ```
