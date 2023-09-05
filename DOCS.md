@@ -87,21 +87,22 @@ LOPObject.OPCodes.GETGLOBAL("print")
 ```
 
 ```lua
-LOPObject.OPCodes.GETGLOBAL("myVariableSetWithSETGLOBAL")
+LOPObject.OPCodes.GETGLOBAL("myGloval")
 ```
 
 ### SETGLOBAL
 
 ```lua
-function(GlobalName, NewValue)
+function(GlobalName)
 ```
 
-Sets the global variable GlobalName to the value NewValue.
+Sets the global variable GlobalName to the top value of the stack.
 
 Example:
 
 ```lua
-LOPObject.OPCodes.SETGLOBAL("myGlobal", 42)
+LOPObject.OPCodes.LOADK(42)
+LOPObject.OPCodes.SETGLOBAL("myGlobal")
 ```
 
 ### SETTABLE
