@@ -19,10 +19,17 @@ LOPObject.OPCodes.ECOPY("variable1", "variable2")
 ### SCOPY
 
 ```lua
+<<<<<<< HEAD
 function(IndexFrom, IndexTo)
 ```
 
 Copies the value at index IndexFrom to index IndexTo in the LOPObject's internal stack.
+=======
+function(IdxFrom, IdxTo)
+```
+
+Copies the value at index IdxFrom to index IdxTo in the LOPObject's internal stack.
+>>>>>>> f66d77f82497beb39f8e857e29820e84cd8dd82d
 
 Example:
 
@@ -87,21 +94,37 @@ LOPObject.OPCodes.GETGLOBAL("print")
 ```
 
 ```lua
+<<<<<<< HEAD
 LOPObject.OPCodes.GETGLOBAL("myVariableSetWithSETGLOBAL")
+=======
+LOPObject.OPCodes.GETGLOBAL("myGloval")
+>>>>>>> f66d77f82497beb39f8e857e29820e84cd8dd82d
 ```
 
 ### SETGLOBAL
 
 ```lua
+<<<<<<< HEAD
 function(GlobalName, NewValue)
 ```
 
 Sets the global variable GlobalName to the value NewValue.
+=======
+function(GlobalName)
+```
+
+Sets the global variable GlobalName to the top value of the stack.
+>>>>>>> f66d77f82497beb39f8e857e29820e84cd8dd82d
 
 Example:
 
 ```lua
+<<<<<<< HEAD
 LOPObject.OPCodes.SETGLOBAL("myGlobal", 42)
+=======
+LOPObject.OPCodes.LOADK(42)
+LOPObject.OPCodes.SETGLOBAL("myGlobal")
+>>>>>>> f66d77f82497beb39f8e857e29820e84cd8dd82d
 ```
 
 ### SETTABLE
