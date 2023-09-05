@@ -1,0 +1,12 @@
+{
+   "name": "luaop",
+   "tree": {
+      "$className": "DataModel",
+      "ServerStorage": {
+         "$className": "ServerStorage",
+         "luaop": {
+            "$path": "src"
+         }
+      }
+   }
+}

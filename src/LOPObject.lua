@@ -1,43 +1,9 @@
-local GEnv;
-
+local GEnv
 do
-	GEnv = getfenv(1)
+   GEnv = getfenv(1)
 end
-
-local Constructor, LOPObject, LazyFuncs = {}, {}, {}
-
-function Constructor.new()
-	return setmetatable({}, {__index = LOPObject})
-end
-
-function LazyFuncs:CheckVoid(...)
-	if select("#", ...) > 1 then
-		error("expected 1 argument for CheckVoid", 2)
-	end
-
-	return select("#", ...) == 0
-end
-
-function LazyFuncs:CheckArg(func, pos, arg, possibleArgType)
-	local currentArgType = type(arg)
-
-	if type(possibleArgType) == "table" then
-		for _, acceptableArgType in next, possibleArgType do
-			if acceptableArgType == currentArgType then
-				return
-			end
-		end
-
-		error(`invalid argument #{pos} to '{func}' (expected {table.concat(possibleArgType, " or ")}, got {currentArgType})`, 2)
-	elseif type(possibleArgType) == "string" then
-		if possibleArgType ~= currentArgType then
-			error(`invalid argument #{pos} to '{func}' (expected {possibleArgType}, got {currentArgType})`, 2)
-		end
-	else
-		error("expected a string for the type argument", 2)
-	end
-end
-
+local LazyFuncs = require(script.Parent.LazyFuncs)
+local LOPObject = {}
 LOPObject.Stack = {}
 LOPObject.FastCallFunc = {}
 LOPObject.Clock = os.clock()
@@ -49,11 +15,11 @@ LOPObject.OPCodes = {
 		Data.Env[To] = From
 	end,
 
-	SCOPY = function(_, IdxFrom, IdxTo)
-		LazyFuncs:CheckArg("SCOPY", 1, IdxFrom, "number")
-		LazyFuncs:CheckArg("SCOPY", 2, IdxTo, "number")
+	SCOPY = function(_, IndexFrom, IndexTo)
+		LazyFuncs:CheckArg("SCOPY", 1, IndexFrom, "number")
+		LazyFuncs:CheckArg("SCOPY", 2, IndexTo, "number")
 
-		table.insert(LOPObject.Stack, IdxTo, LOPObject.Stack[IdxFrom])
+		table.insert(LOPObject.Stack, IndexTo, LOPObject.Stack[IndexFrom])
 	end,
 
 	LOADK = function(_, Const)
@@ -84,14 +50,14 @@ LOPObject.OPCodes = {
 		Data.Env[GlobalName] = LOPObject.Stack[1]
 	end,
 
-	SETTABLE = function(_, IdxArgNum)
-		LazyFuncs:CheckArg("SETTABLE", 1, IdxArgNum, "number")
-		LazyFuncs:CheckArg("SETTABLE", 2, LOPObject.Stack[IdxArgNum + 1], "table")
+	SETTABLE = function(_, IndexArgNum)
+		LazyFuncs:CheckArg("SETTABLE", 1, IndexArgNum, "number")
+		LazyFuncs:CheckArg("SETTABLE", 2, LOPObject.Stack[IndexArgNum + 1], "table")
 
 		local Args = {}
 
-		for Idx = 1, IdxArgNum do
-			table.insert(LOPObject.Stack[IdxArgNum + 1], 1, LOPObject.Stack[Idx])
+		for Index = 1, IndexArgNum do
+			table.insert(LOPObject.Stack[IndexArgNum + 1], 1, LOPObject.Stack[Index])
 		end
 	end,
 
@@ -259,23 +225,23 @@ LOPObject.OPCodes = {
 		table.insert(LOPObject.Stack, 1, Data.Args)
 	end,
 
-	CALL = function(_, IdxArgNum)
-		LazyFuncs:CheckArg("CALL", 1, IdxArgNum, "number")
-		LazyFuncs:CheckArg("CALL", 2, LOPObject.Stack[IdxArgNum + 1], {"table", "function"})
+	CALL = function(_, IndexArgNum)
+		LazyFuncs:CheckArg("CALL", 1, IndexArgNum, "number")
+		LazyFuncs:CheckArg("CALL", 2, LOPObject.Stack[IndexArgNum + 1], {"table", "function"})
 
-		local Func = LOPObject.Stack[IdxArgNum + 1]
+		local Func = LOPObject.Stack[IndexArgNum + 1]
 		local Args = {}
 
-		for Idx = 1, IdxArgNum do
-			table.insert(Args, LOPObject.Stack[Idx])
+		for Index = 1, IndexArgNum do
+			table.insert(Args, LOPObject.Stack[Index])
 		end
 
 		local Return;
 		if type(Func) == "table" then --> Prototype
-			for IdxSOP, FuncOP in pairs(Func) do
-				LazyFuncs:CheckArg("CALL (SCOPECHECK)", IdxSOP, FuncOP, "table")
-				LazyFuncs:CheckArg("CALL (SCOPECHECK)", IdxSOP, FuncOP.Name, "string")
-				LazyFuncs:CheckArg("CALL (SCOPECHECK)", IdxSOP, FuncOP.Args, "table")
+			for IndexSOP, FuncOP in pairs(Func) do
+				LazyFuncs:CheckArg("CALL (SCOPECHECK)", IndexSOP, FuncOP, "table")
+				LazyFuncs:CheckArg("CALL (SCOPECHECK)", IndexSOP, FuncOP.Name, "string")
+				LazyFuncs:CheckArg("CALL (SCOPECHECK)", IndexSOP, FuncOP.Args, "table")
 			end
 
 			local Data = LOPObject:Run(Func, false, Args)
@@ -304,22 +270,22 @@ LOPObject.OPCodes = {
 		LOPObject.FastCallFunc = LOPObject.Stack[1]
 	end,
 
-	FASTCALL = function(_, IdxArgNum)
-		LazyFuncs:CheckArg("FASTCALL", 1, IdxArgNum, "number")
+	FASTCALL = function(_, IndexArgNum)
+		LazyFuncs:CheckArg("FASTCALL", 1, IndexArgNum, "number")
 		LazyFuncs:CheckArg("FASTCALL", 2, LOPObject.FastCallFunc, {"table", "function"})
 
-		table.insert(LOPObject.Stack, IdxArgNum + 1, LOPObject.FastCallFunc)
+		table.insert(LOPObject.Stack, IndexArgNum + 1, LOPObject.FastCallFunc)
 
-		LOPObject.OPCodes.CALL(nil, IdxArgNum)
+		LOPObject.OPCodes.CALL(nil, IndexArgNum)
 	end,
 
 	PCALL = function(_, Scope)
 		LazyFuncs:CheckArg("PCALL", 1, Scope, "table")
 
-		for IdxSOP, ScopeOP in pairs(Scope) do
-			LazyFuncs:CheckArg("PCALL (SCOPECHECK)", IdxSOP, ScopeOP, "table")
-			LazyFuncs:CheckArg("PCALL (SCOPECHECK)", IdxSOP, ScopeOP.Name, "string")
-			LazyFuncs:CheckArg("PCALL (SCOPECHECK)", IdxSOP, ScopeOP.Args, "table")
+		for IndexSOP, ScopeOP in pairs(Scope) do
+			LazyFuncs:CheckArg("PCALL (SCOPECHECK)", IndexSOP, ScopeOP, "table")
+			LazyFuncs:CheckArg("PCALL (SCOPECHECK)", IndexSOP, ScopeOP.Name, "string")
+			LazyFuncs:CheckArg("PCALL (SCOPECHECK)", IndexSOP, ScopeOP.Args, "table")
 		end
 
 		local Sucess, Output = pcall(function()
@@ -348,10 +314,10 @@ LOPObject.OPCodes = {
 	CNVPROTO = function(Data)
 		LazyFuncs:CheckArg("CNVPROTO", 1, LOPObject.Stack[1], "table")
 
-		for IdxSOP, ScopeOP in pairs(LOPObject.Stack[1]) do
-			LazyFuncs:CheckArg("CNVPROTO (SCOPECHECK)", IdxSOP, ScopeOP, "table")
-			LazyFuncs:CheckArg("CNVPROTO (SCOPECHECK)", IdxSOP, ScopeOP.Name, "string")
-			LazyFuncs:CheckArg("CNVPROTO (SCOPECHECK)", IdxSOP, ScopeOP.Args, "table")
+		for IndexSOP, ScopeOP in pairs(LOPObject.Stack[1]) do
+			LazyFuncs:CheckArg("CNVPROTO (SCOPECHECK)", IndexSOP, ScopeOP, "table")
+			LazyFuncs:CheckArg("CNVPROTO (SCOPECHECK)", IndexSOP, ScopeOP.Name, "string")
+			LazyFuncs:CheckArg("CNVPROTO (SCOPECHECK)", IndexSOP, ScopeOP.Args, "table")
 		end
 
 		table.insert(LOPObject.Stack, 1, function(...)
@@ -359,13 +325,13 @@ LOPObject.OPCodes = {
 		end)
 	end,
 
-	RETURN = function(Data, IdxArgNum)
+	RETURN = function(Data, IndexArgNum)
 		Data.BreakScope = true
 
 		local Returns = {}
 
-		for Idx = 1, IdxArgNum do
-			table.insert(Returns, LOPObject.Stack[Idx])
+		for Index = 1, IndexArgNum do
+			table.insert(Returns, LOPObject.Stack[Index])
 		end
 
 		table.insert(LOPObject.Stack, 1, Returns)
@@ -384,10 +350,10 @@ LOPObject.OPCodes = {
 		if LOPObject.Stack[1] then
 			LazyFuncs:CheckArg("IF", 1, Scope, "table")
 
-			for IdxSOP, ScopeOP in pairs(Scope) do
-				LazyFuncs:CheckArg("IF (SCOPECHECK)", IdxSOP, ScopeOP, "table")
-				LazyFuncs:CheckArg("IF (SCOPECHECK)", IdxSOP, ScopeOP.Name, "string")
-				LazyFuncs:CheckArg("IF (SCOPECHECK)", IdxSOP, ScopeOP.Args, "table")
+			for IndexSOP, ScopeOP in pairs(Scope) do
+				LazyFuncs:CheckArg("IF (SCOPECHECK)", IndexSOP, ScopeOP, "table")
+				LazyFuncs:CheckArg("IF (SCOPECHECK)", IndexSOP, ScopeOP.Name, "string")
+				LazyFuncs:CheckArg("IF (SCOPECHECK)", IndexSOP, ScopeOP.Args, "table")
 			end
 
 			LOPObject:Run(Scope)
@@ -399,10 +365,10 @@ LOPObject.OPCodes = {
 		LazyFuncs:CheckArg("FORI", 2, LOPObject.Stack[1], "number")
 		LazyFuncs:CheckArg("FORI", 3, LOPObject.Stack[2], "number")
 
-		for IdxSOP, ScopeOP in pairs(Scope) do
-			LazyFuncs:CheckArg("FORI (SCOPECHECK)", IdxSOP, ScopeOP, "table")
-			LazyFuncs:CheckArg("FORI (SCOPECHECK)", IdxSOP, ScopeOP.Name, "string")
-			LazyFuncs:CheckArg("FORI (SCOPECHECK)", IdxSOP, ScopeOP.Args, "table")
+		for IndexSOP, ScopeOP in pairs(Scope) do
+			LazyFuncs:CheckArg("FORI (SCOPECHECK)", IndexSOP, ScopeOP, "table")
+			LazyFuncs:CheckArg("FORI (SCOPECHECK)", IndexSOP, ScopeOP.Name, "string")
+			LazyFuncs:CheckArg("FORI (SCOPECHECK)", IndexSOP, ScopeOP.Args, "table")
 		end
 
 		for I = LOPObject.Stack[2], LOPObject.Stack[1] do
@@ -418,14 +384,14 @@ LOPObject.OPCodes = {
 		LazyFuncs:CheckArg("FOR", 1, Scope, "table")
 		LazyFuncs:CheckArg("FOR", 2, LOPObject.Stack[1], "table")
 
-		for IdxSOP, ScopeOP in pairs(Scope) do
-			LazyFuncs:CheckArg("FOR (SCOPECHECK)", IdxSOP, ScopeOP, "table")
-			LazyFuncs:CheckArg("FOR (SCOPECHECK)", IdxSOP, ScopeOP.Name, "string")
-			LazyFuncs:CheckArg("FOR (SCOPECHECK)", IdxSOP, ScopeOP.Args, "table")
+		for IndexSOP, ScopeOP in pairs(Scope) do
+			LazyFuncs:CheckArg("FOR (SCOPECHECK)", IndexSOP, ScopeOP, "table")
+			LazyFuncs:CheckArg("FOR (SCOPECHECK)", IndexSOP, ScopeOP.Name, "string")
+			LazyFuncs:CheckArg("FOR (SCOPECHECK)", IndexSOP, ScopeOP.Args, "table")
 		end
 
-		for Idx, Val in pairs(LOPObject.Stack[1]) do
-			local LData = LOPObject:Run(Scope, true, Idx, Val)
+		for Index, Val in pairs(LOPObject.Stack[1]) do
+			local LData = LOPObject:Run(Scope, true, Index, Val)
 
 			if LData.BreakScope then
 				break
@@ -436,10 +402,10 @@ LOPObject.OPCodes = {
 	DO = function(Data, Scope)
 		LazyFuncs:CheckArg("DO", 1, Scope, "table")
 
-		for IdxSOP, ScopeOP in pairs(Scope) do
-			LazyFuncs:CheckArg("DO (SCOPECHECK)", IdxSOP, ScopeOP, "table")
-			LazyFuncs:CheckArg("DO (SCOPECHECK)", IdxSOP, ScopeOP.Name, "string")
-			LazyFuncs:CheckArg("DO (SCOPECHECK)", IdxSOP, ScopeOP.Args, "table")
+		for IndexSOP, ScopeOP in pairs(Scope) do
+			LazyFuncs:CheckArg("DO (SCOPECHECK)", IndexSOP, ScopeOP, "table")
+			LazyFuncs:CheckArg("DO (SCOPECHECK)", IndexSOP, ScopeOP.Name, "string")
+			LazyFuncs:CheckArg("DO (SCOPECHECK)", IndexSOP, ScopeOP.Args, "table")
 		end
 
 		LOPObject:Run(Scope)
@@ -450,10 +416,10 @@ function LOPObject:Run(OpCodes, IsInLoop, Args): any
 	LazyFuncs:CheckArg("Run", 1, OpCodes, "table")
 	LazyFuncs:CheckArg("Run", 2, IsInLoop, {"boolean", "nil"})
 
-	for IdxSOP, OpCodesOP in pairs(OpCodes) do
-		LazyFuncs:CheckArg("Run (SCOPECHECK)", IdxSOP, OpCodesOP, "table")
-		LazyFuncs:CheckArg("Run (SCOPECHECK)", IdxSOP, OpCodesOP.Name, "string")
-		LazyFuncs:CheckArg("Run (SCOPECHECK)", IdxSOP, OpCodesOP.Args, "table")
+	for IndexSOP, OpCodesOP in pairs(OpCodes) do
+		LazyFuncs:CheckArg("Run (SCOPECHECK)", IndexSOP, OpCodesOP, "table")
+		LazyFuncs:CheckArg("Run (SCOPECHECK)", IndexSOP, OpCodesOP.Name, "string")
+		LazyFuncs:CheckArg("Run (SCOPECHECK)", IndexSOP, OpCodesOP.Args, "table")
 	end
 
 	local SizeOfOP = #OpCodes
@@ -478,7 +444,7 @@ function LOPObject:Run(OpCodes, IsInLoop, Args): any
 			end)
 
 			if not Success then
-				error(`LOP Runtime Error at OP \`{OPData.Name}\`: {string.gsub(Error, ".+:%d+: ", "", 1)} [PC: {Data.CurrPointer}]`, 3)
+				error(`LOP Runtime Error at OP \"{OPData.Name}\": {string.gsub(Error, ".+:%d+: ", "", 1)} [PC: {Data.CurrPointer}]`, 3)
 			end
 
 			if Data.BreakScope then
@@ -491,5 +457,4 @@ function LOPObject:Run(OpCodes, IsInLoop, Args): any
 
 	return Data, Data.Return
 end
-
-return Constructor
+return LOPObject
