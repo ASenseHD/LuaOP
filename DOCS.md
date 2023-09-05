@@ -97,7 +97,7 @@ LOPObject.OPCodes.GETGLOBAL("print")
 <<<<<<< HEAD
 LOPObject.OPCodes.GETGLOBAL("myVariableSetWithSETGLOBAL")
 =======
-LOPObject.OPCodes.GETGLOBAL("myGloval")
+LOPObject.OPCodes.GETGLOBAL("myGlobal")
 >>>>>>> f66d77f82497beb39f8e857e29820e84cd8dd82d
 ```
 
