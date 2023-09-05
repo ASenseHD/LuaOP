@@ -25,10 +25,10 @@ function(IndexFrom, IndexTo)
 
 Copies the value at index IndexFrom to index IndexTo in the LOPObject's internal stack.
 =======
-function(IdxFrom, IdxTo)
+function(IndexFrom, IndexTo)
 ```
 
-Copies the value at index IdxFrom to index IdxTo in the LOPObject's internal stack.
+Copies the value at index IndexFrom to index IndexTo in the LOPObject's internal stack.
 >>>>>>> f66d77f82497beb39f8e857e29820e84cd8dd82d
 
 Example:
@@ -130,10 +130,10 @@ LOPObject.OPCodes.SETGLOBAL("myGlobal")
 ### SETTABLE
 
 ```lua
-function(IdxArgNum)
+function(IndexArgNum)
 ```
 
-Sets a table at index IdxArgNum on the stack with values from the stack.
+Sets a table at index IndexArgNum on the stack with values from the stack.
 
 Example:
 
@@ -532,10 +532,10 @@ LOPObject.OPCodes.GETARGS()
 ### CALL
 
 ```lua
-function(IdxArgNum)
+function(IndexArgNum)
 ```
 
-Calls a function on the stack with the top IdxArgNum values as arguments. The function itself is below the arguments on the stack.
+Calls a function on the stack with the top IndexArgNum values as arguments. The function itself is below the arguments on the stack.
 
 Example:
 
@@ -591,10 +591,10 @@ LOPObject.OPCodes.SETFASTFUNC() -- will set the lua global "print" as the FASTFU
 ### FASTCALL
 
 ```lua
-function(IdxArgNum)
+function(IndexArgNum)
 ```
 
-Calls the fast function assuming it was previously defined with ``SETFASTFUNC`` with the top IdxArgNum values as arguments.
+Calls the fast function assuming it was previously defined with ``SETFASTFUNC`` with the top IndexArgNum values as arguments.
 
 Example:
 
@@ -681,10 +681,10 @@ LOPObject.OPCodes.CNVPROTO()
 ### RETURN
 
 ```lua
-function(IdxArgNum)
+function(IndexArgNum)
 ```
 
-Signals the end of a function and returns the top IdxArgNum values on the stack as the return values.
+Signals the end of a function and returns the top IndexArgNum values on the stack as the return values.
 
 Example:
 
