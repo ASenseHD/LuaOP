@@ -20,7 +20,7 @@ LOPObject:Run({
     {Name = "NEWPROTO", Args = {ProtoTable}},
     {Name = "CALL", Args = {0}}, -- Call proto with no arguments (0 arguments, so no elements from the stack)
 
-    -- Since calling pushes a tabke with the return values, we have to get the only value that is returned, this value being at index 1 of the return table
+    -- Since calling pushes a table with the return values, we have to get the only value that is returned, this value being at index 1 of the return table
     {Name = "LOADK", Args = {1}},
     {Name = "GETFIELD", Args = {}},
 	
