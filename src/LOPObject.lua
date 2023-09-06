@@ -445,4 +445,5 @@ function LOPObject:Run(OpCodes, IsInLoop, Args): any
 
 	return Data, Data.Return
 end
+
 return LOPObject
