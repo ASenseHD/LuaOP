@@ -2,11 +2,14 @@ local GEnv
 do
    GEnv = getfenv(1)
 end
+
 local LazyFuncs = require(script.Parent.LazyFuncs)
 local LOPObject = {}
+
 LOPObject.Stack = {}
 LOPObject.FastCallFunc = {}
 LOPObject.Clock = os.clock()
+
 LOPObject.OPCodes = {
 	ECOPY = function(Data, From, To)
 		LazyFuncs:CheckArg("ECOPY", 1, From, "string")
@@ -442,4 +445,5 @@ function LOPObject:Run(OpCodes, IsInLoop, Args): any
 
 	return Data, Data.Return
 end
+
 return LOPObject

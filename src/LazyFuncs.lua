@@ -1,4 +1,5 @@
 local LazyFuncs = {}
+
 function LazyFuncs:CheckVoid(...)
 	if select("#", ...) > 1 then
 		error("expected 1 argument for CheckVoid", 2)
@@ -26,4 +27,5 @@ function LazyFuncs:CheckArg(func, pos, arg, possibleArgType)
 		error("expected a string for the type argument", 2)
 	end
 end
+
 return LazyFuncs
