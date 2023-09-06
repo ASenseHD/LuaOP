@@ -750,7 +750,7 @@ The LOPObject:Run function is used to execute a sequence of OpCodes within a pro
 
 - ``Scope``: A table containing the sequence of OpCodes to execute.
 - ``IsInLoop`` (should not be used): A boolean indicating if the execution is inside a loop (for the ``BREAK`` opcode).
-- ``Args`` (optional): A table of arguments to be passed to the OpCodes.
+- ``Args`` (optional): A table of arguments that can be retrieved with ``GETARGS`` by the program.
 
 #### Returns
 
