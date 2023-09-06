@@ -170,29 +170,29 @@ LOPObject.OPCodes = {
 	end,
 
 	LE = function()
-		LazyFuncs:CheckArg("LESS", 1, LOPObject.Stack[1], "number")
-		LazyFuncs:CheckArg("LESS", 2, LOPObject.Stack[2], "number")
+		LazyFuncs:CheckArg("LE", 1, LOPObject.Stack[1], "number")
+		LazyFuncs:CheckArg("LE", 2, LOPObject.Stack[2], "number")
 
 		table.insert(LOPObject.Stack, 1, LOPObject.Stack[1] < LOPObject.Stack[2])
 	end,
 
 	GE = function()
-		LazyFuncs:CheckArg("GREATER", 1, LOPObject.Stack[1], "number")
-		LazyFuncs:CheckArg("GREATER", 2, LOPObject.Stack[2], "number")
+		LazyFuncs:CheckArg("GE", 1, LOPObject.Stack[1], "number")
+		LazyFuncs:CheckArg("GE", 2, LOPObject.Stack[2], "number")
 
 		table.insert(LOPObject.Stack, 1, LOPObject.Stack[1] > LOPObject.Stack[2])
 	end,
 
 	LEQ = function()
-		LazyFuncs:CheckArg("LESSEQ", 1, LOPObject.Stack[1], "number")
-		LazyFuncs:CheckArg("LESSEQ", 2, LOPObject.Stack[2], "number")
+		LazyFuncs:CheckArg("LEQ", 1, LOPObject.Stack[1], "number")
+		LazyFuncs:CheckArg("LEQ", 2, LOPObject.Stack[2], "number")
 
 		table.insert(LOPObject.Stack, 1, LOPObject.Stack[1] <= LOPObject.Stack[2])
 	end,
 
 	GEQ = function()
-		LazyFuncs:CheckArg("GREATEREQ", 1, LOPObject.Stack[1], "number")
-		LazyFuncs:CheckArg("GREATEREQ", 2, LOPObject.Stack[2], "number")
+		LazyFuncs:CheckArg("GEQ", 1, LOPObject.Stack[1], "number")
+		LazyFuncs:CheckArg("GEQ", 2, LOPObject.Stack[2], "number")
 
 		table.insert(LOPObject.Stack, 1, LOPObject.Stack[1] >= LOPObject.Stack[2])
 	end,
