@@ -296,21 +296,6 @@ LOPObject.OPCodes = {
 		table.insert(LOPObject.Stack, 1, Output)
 	end,
 
-	GETFENV = function(Data)
-		LazyFuncs:CheckArg("GETFENV", 1, LOPObject.Stack[1], "function")
-
-		table.insert(LOPObject.Stack, 1, getfenv(LOPObject.Stack[1]))
-	end,
-
-	SETFENV = function(Data, FuncOrScope)
-		LazyFuncs:CheckArg("SETFENV", 2, LOPObject.Stack[1], "table")
-		LazyFuncs:CheckArg("SETFENV", 1, LOPObject.Stack[2], "function")
-
-		local FuncOrScope = setfenv(LOPObject.Stack[2], LOPObject.Stack[1])
-
-		table.insert(LOPObject.Stack, 1, LOPObject.Stack[1])
-	end,
-
 	CNVPROTO = function(Data)
 		LazyFuncs:CheckArg("CNVPROTO", 1, LOPObject.Stack[1], "table")
 
